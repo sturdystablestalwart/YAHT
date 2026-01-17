@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Claude
+CLAUDE.md
+.claude/
+
+# Vercel
+.vercel/
+
+# Build output
+dist/
+
+# Misc
+nul
+*.log
+.DS_Store
