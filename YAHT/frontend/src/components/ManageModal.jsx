@@ -21,8 +21,6 @@ import { habitsAPI } from "../services/api";
 import DeleteConfirmDialog from "./DeleteConfirmDialog.jsx";
 
 const periodOptions = [
-  { label: "Minute", value: "minute" },
-  { label: "Hour", value: "hour" },
   { label: "Day", value: "day" },
   { label: "Week", value: "week" },
   { label: "Month", value: "month" },
@@ -71,6 +69,14 @@ function ManageModal({ onHabitUpdated }) {
   }, [isOpen]);
 
   const parseFrequency = (frequency) => {
+    // Handle new structured format { target, period }
+    if (frequency && typeof frequency === "object") {
+      return {
+        times: String(frequency.target || 1),
+        period: frequency.period || "day",
+      };
+    }
+    // Handle legacy string format "3 per day"
     const match = frequency?.match(/(\d+)\s*per\s*(\w+)/i);
     if (match) {
       return { times: match[1], period: match[2].toLowerCase() };
@@ -108,7 +114,10 @@ function ManageModal({ onHabitUpdated }) {
     setError("");
 
     try {
-      const frequency = `${editTimesPerPeriod} per ${editPeriod}`;
+      const frequency = {
+        target: parseInt(editTimesPerPeriod, 10),
+        period: editPeriod,
+      };
       await habitsAPI.update(selectedHabit._id, {
         title: editTitle.trim(),
         frequency,
@@ -326,7 +335,7 @@ function ManageModal({ onHabitUpdated }) {
                               {habit.title}
                             </Text>
                             <Text fontSize="sm" color={textColor} opacity={0.7}>
-                              {habit.frequency}
+                              {habit.frequency?.target || 1} per {habit.frequency?.period || "day"}
                             </Text>
                           </Box>
                           <Box color={textColor} opacity={0.5}>

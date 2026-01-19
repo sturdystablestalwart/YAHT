@@ -54,7 +54,10 @@ const Create = () => {
     setIsLoading(true);
 
     try {
-      const frequency = `${timesPerPeriod} per ${period}`;
+      const frequency = {
+        target: parseInt(timesPerPeriod, 10),
+        period: period,
+      };
       await habitsAPI.create({
         title: title.trim(),
         frequency,
@@ -233,14 +236,6 @@ const Create = () => {
 
 const periodOptions = [
   {
-    label: "Minute",
-    value: "minute",
-  },
-  {
-    label: "Hour",
-    value: "hour",
-  },
-  {
     label: "Day",
     value: "day",
   },
@@ -251,10 +246,6 @@ const periodOptions = [
   {
     label: "Month",
     value: "month",
-  },
-  {
-    label: "Custom",
-    value: "custom",
   },
 ];
 
