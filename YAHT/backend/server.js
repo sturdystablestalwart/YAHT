@@ -5,6 +5,7 @@ import { connectDB } from "./config/db.js";
 import habitRoutes from "./routes/habit.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import completionRoutes from "./routes/completion.routes.js";
+import notificationRoutes from "./routes/notifications.routes.js";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/habits", habitRoutes);
 app.use("/api/completions", completionRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.listen(PORT, () => {
   connectDB();

@@ -25,6 +25,29 @@ const userSchema = new mongoose.Schema(
       minlength: [6, "Password must be at least 6 characters"],
       select: false,
     },
+    notificationSettings: {
+      enabled: {
+        type: Boolean,
+        default: false,
+      },
+      permission: {
+        type: String,
+        enum: ["default", "granted", "denied"],
+        default: "default",
+      },
+      quietHours: {
+        start: {
+          type: String,
+          match: [/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format. Use HH:mm"],
+          default: null,
+        },
+        end: {
+          type: String,
+          match: [/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format. Use HH:mm"],
+          default: null,
+        },
+      },
+    },
   },
   {
     timestamps: true,

@@ -13,19 +13,26 @@ import {
   Textarea,
   Field,
   Portal,
+  HStack,
+  VStack,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode.jsx";
 import HomeCard from "../components/HomeCard.jsx";
-import { habitsAPI } from "../services/api";
+import { habitsAPI } from "../services/api.js";
+import { useNotification } from "../contexts/NotificationContext.jsx";
+import TimeInput from "../components/TimeInput.jsx";
 
 const Create = () => {
   const navigate = useNavigate();
   const { contains } = useFilter({ sensitivity: "base" });
+  const { canShowNotifications } = useNotification();
 
   const [title, setTitle] = useState("");
   const [timesPerPeriod, setTimesPerPeriod] = useState("");
   const [period, setPeriod] = useState("");
   const [description, setDescription] = useState("");
+  const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [reminderTime, setReminderTime] = useState("09:00");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -58,12 +65,24 @@ const Create = () => {
         target: parseInt(timesPerPeriod, 10),
         period: period,
       };
-      await habitsAPI.create({
+
+      const habitData = {
         title: title.trim(),
         frequency,
         active: true,
         description: description.trim() || undefined,
-      });
+      };
+
+      // Add reminder settings if user has notifications enabled
+      if (canShowNotifications() && reminderEnabled) {
+        habitData.reminderSettings = {
+          enabled: reminderEnabled,
+          time: reminderTime,
+          days: [0, 1, 2, 3, 4, 5, 6], // All days by default
+        };
+      }
+
+      await habitsAPI.create(habitData);
       navigate("/");
     } catch (err) {
       setError(err.message || "Failed to create habit");
@@ -209,6 +228,41 @@ const Create = () => {
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </Field.Root>
+
+                {canShowNotifications() && (
+                  <Box pt={4} pb={2}>
+                    <Field.Label color={textColor} mb={3}>
+                      Reminder Settings
+                    </Field.Label>
+                    <VStack align="stretch" gap={3}>
+                      <HStack justify="space-between">
+                        <Text color={textColor} fontSize="sm">
+                          Send me reminders
+                        </Text>
+                        <Button
+                          size="xs"
+                          colorPalette={reminderEnabled ? "green" : "gray"}
+                          variant={reminderEnabled ? "solid" : "outline"}
+                          onClick={() => setReminderEnabled(!reminderEnabled)}
+                        >
+                          {reminderEnabled ? "Yes" : "No"}
+                        </Button>
+                      </HStack>
+                      {reminderEnabled && (
+                        <Field.Root>
+                          <Field.Label color={textColor} fontSize="sm">
+                            Reminder Time (24h)
+                          </Field.Label>
+                          <TimeInput
+                            value={reminderTime}
+                            onChange={setReminderTime}
+                            size="sm"
+                          />
+                        </Field.Root>
+                      )}
+                    </VStack>
+                  </Box>
+                )}
 
                 <Button
                   mt={5}

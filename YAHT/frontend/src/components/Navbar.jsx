@@ -13,7 +13,7 @@ import {
 import { ColorModeButton, useColorModeValue } from "./ui/color-mode.jsx";
 import { keyframes } from "@emotion/react";
 import { FaPlus, FaUser } from "react-icons/fa6";
-import { LuLogOut } from "react-icons/lu";
+import { LuLogOut, LuSettings } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -92,6 +92,10 @@ const Navbar = () => {
                   </Button>
                 </MenuTrigger>
                 <MenuContent>
+                  <MenuItem value="settings" onClick={() => navigate("/settings")}>
+                    <LuSettings style={{ marginRight: "8px" }} />
+                    Settings
+                  </MenuItem>
                   <MenuItem value="logout" onClick={handleLogout}>
                     <LuLogOut style={{ marginRight: "8px" }} />
                     Logout

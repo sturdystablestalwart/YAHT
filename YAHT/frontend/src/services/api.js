@@ -49,6 +49,15 @@ export const authAPI = {
     });
     return handleResponse(response);
   },
+
+  updateNotificationSettings: async (settings) => {
+    const response = await fetch(`${API_BASE_URL}/auth/notification-settings`, {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(settings),
+    });
+    return handleResponse(response);
+  },
 };
 
 export const habitsAPI = {
@@ -147,6 +156,31 @@ export const completionsAPI = {
     const response = await fetch(`${API_BASE_URL}/completions/${habitId}/today`, {
       method: "DELETE",
       headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+  },
+};
+
+export const notificationsAPI = {
+  getPending: async (currentTime, timezone) => {
+    let url = `${API_BASE_URL}/notifications/pending`;
+    const params = new URLSearchParams();
+    if (currentTime) params.append("currentTime", currentTime);
+    if (timezone) params.append("timezone", timezone);
+    if (params.toString()) url += `?${params.toString()}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+  },
+
+  markSent: async (habitId) => {
+    const response = await fetch(`${API_BASE_URL}/notifications/mark-sent`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ habitId }),
     });
     return handleResponse(response);
   },

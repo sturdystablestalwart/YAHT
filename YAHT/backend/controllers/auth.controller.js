@@ -42,6 +42,7 @@ const register = async (req, res) => {
         id: user._id,
         email: user.email,
         username: user.username,
+        notificationSettings: user.notificationSettings,
       },
     });
   } catch (err) {
@@ -92,6 +93,7 @@ const login = async (req, res) => {
         id: user._id,
         email: user.email,
         username: user.username,
+        notificationSettings: user.notificationSettings,
       },
     });
   } catch (err) {
@@ -117,6 +119,7 @@ const getMe = async (req, res) => {
         id: user._id,
         email: user.email,
         username: user.username,
+        notificationSettings: user.notificationSettings,
       },
     });
   } catch (err) {
@@ -127,4 +130,61 @@ const getMe = async (req, res) => {
   }
 };
 
-export { register, login, getMe };
+const updateNotificationSettings = async (req, res) => {
+  try {
+    const { enabled, permission, quietHoursStart, quietHoursEnd } = req.body;
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (enabled !== undefined) {
+      user.notificationSettings.enabled = enabled;
+    }
+
+    if (permission !== undefined) {
+      if (!["default", "granted", "denied"].includes(permission)) {
+        return res.status(400).json({
+          message: "Invalid permission value",
+        });
+      }
+      user.notificationSettings.permission = permission;
+    }
+
+    if (quietHoursStart !== undefined) {
+      user.notificationSettings.quietHours.start = quietHoursStart;
+    }
+
+    if (quietHoursEnd !== undefined) {
+      user.notificationSettings.quietHours.end = quietHoursEnd;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      user: {
+        id: user._id,
+        email: user.email,
+        username: user.username,
+        notificationSettings: user.notificationSettings,
+      },
+    });
+  } catch (err) {
+    console.error("Update notification settings error:", err);
+
+    if (err.name === "ValidationError") {
+      const messages = Object.values(err.errors).map((e) => e.message);
+      return res.status(400).json({ message: messages.join(", ") });
+    }
+
+    res.status(500).json({
+      message: "An error occurred while updating notification settings",
+    });
+  }
+};
+
+export { register, login, getMe, updateNotificationSettings };

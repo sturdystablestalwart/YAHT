@@ -1,9 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Provider } from "./components/ui/provider";
+import { Provider } from "./components/ui/provider.jsx";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import App from "./App";
+import { AuthProvider } from "./contexts/AuthContext.jsx";
+import { NotificationProvider } from "./contexts/NotificationContext.jsx";
+import App from "./App.jsx";
 import { defaultSystem } from "@chakra-ui/react";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -11,7 +12,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <Provider value={defaultSystem}>
       <BrowserRouter>
         <AuthProvider>
-          <App />
+          <NotificationProvider>
+            <App />
+          </NotificationProvider>
         </AuthProvider>
       </BrowserRouter>
     </Provider>

@@ -42,6 +42,31 @@ const habitSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    reminderSettings: {
+      enabled: {
+        type: Boolean,
+        default: true,
+      },
+      time: {
+        type: String,
+        match: [/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format. Use HH:mm"],
+        default: "09:00",
+      },
+      days: {
+        type: [Number],
+        validate: {
+          validator: function (days) {
+            return days.every((day) => day >= 0 && day <= 6);
+          },
+          message: "Days must be between 0 (Sunday) and 6 (Saturday)",
+        },
+        default: [0, 1, 2, 3, 4, 5, 6],
+      },
+      lastSent: {
+        type: Date,
+        default: null,
+      },
+    },
   },
   {
     timestamps: true,
