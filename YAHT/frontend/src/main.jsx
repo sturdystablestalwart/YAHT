@@ -5,11 +5,10 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { NotificationProvider } from "./contexts/NotificationContext.jsx";
 import App from "./App.jsx";
-import { defaultSystem } from "@chakra-ui/react";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Provider value={defaultSystem}>
+    <Provider>
       <BrowserRouter>
         <AuthProvider>
           <NotificationProvider>

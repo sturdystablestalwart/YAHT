@@ -5,17 +5,16 @@ import {
   HStack,
   IconButton,
   Button,
-  MenuRoot,
-  MenuTrigger,
-  MenuContent,
-  MenuItem,
+  Menu,
+  Portal,
 } from "@chakra-ui/react";
 import { ColorModeButton, useColorModeValue } from "./ui/color-mode.jsx";
 import { keyframes } from "@emotion/react";
 import { FaPlus, FaUser } from "react-icons/fa6";
-import { LuLogOut, LuSettings } from "react-icons/lu";
+import { LuLogOut, LuSettings, LuLayoutDashboard } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { colors } from "../theme/colors.js";
 
 const gradientAnimation = keyframes`
   0% { background-position: 0% 100%; }
@@ -28,7 +27,8 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   // Call hooks at component top level
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
+  const hoverBg = colors.hover.light; // Same for both modes
 
   const handleLogout = () => {
     logout();
@@ -45,9 +45,9 @@ const Navbar = () => {
       >
         <Text
           bgGradient="to-l"
-          gradientFrom="#007241"
-          gradientTo="#A65F00"
-          gradientVia="#94002D"
+          gradientFrom={colors.gradient.from}
+          gradientTo={colors.gradient.to}
+          gradientVia={colors.gradient.via}
           bgClip="text"
           fontSize={{
             base: "4xl",
@@ -68,7 +68,7 @@ const Navbar = () => {
                 variant="ghost"
                 rounded="full"
                 _hover={{
-                  bg: "#777777ff",
+                  bg: hoverBg,
                 }}
               >
                 <Link to={"/create"}>
@@ -76,11 +76,23 @@ const Navbar = () => {
                 </Link>
               </IconButton>
 
-              <MenuRoot>
-                <MenuTrigger asChild>
+              <IconButton
+                variant="ghost"
+                rounded="full"
+                _hover={{
+                  bg: hoverBg,
+                }}
+              >
+                <Link to={"/dashboard"}>
+                  <LuLayoutDashboard style={{ width: "24px", height: "24px" }} />
+                </Link>
+              </IconButton>
+
+              <Menu.Root>
+                <Menu.Trigger asChild>
                   <Button
                     variant="ghost"
-                    _hover={{ bg: "#777777ff" }}
+                    _hover={{ bg: hoverBg }}
                     color={textColor}
                   >
                     <HStack>
@@ -90,18 +102,22 @@ const Navbar = () => {
                       </Text>
                     </HStack>
                   </Button>
-                </MenuTrigger>
-                <MenuContent>
-                  <MenuItem value="settings" onClick={() => navigate("/settings")}>
-                    <LuSettings style={{ marginRight: "8px" }} />
-                    Settings
-                  </MenuItem>
-                  <MenuItem value="logout" onClick={handleLogout}>
-                    <LuLogOut style={{ marginRight: "8px" }} />
-                    Logout
-                  </MenuItem>
-                </MenuContent>
-              </MenuRoot>
+                </Menu.Trigger>
+                <Portal>
+                  <Menu.Positioner>
+                    <Menu.Content>
+                      <Menu.Item value="settings" onClick={() => navigate("/settings")}>
+                        <LuSettings style={{ marginRight: "8px" }} />
+                        Settings
+                      </Menu.Item>
+                      <Menu.Item value="logout" onClick={handleLogout}>
+                        <LuLogOut style={{ marginRight: "8px" }} />
+                        Logout
+                      </Menu.Item>
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Portal>
+              </Menu.Root>
             </>
           ) : (
             <>
