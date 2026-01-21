@@ -11,12 +11,14 @@ import { useNotification } from "../../contexts/NotificationContext.jsx";
 import { BsBellFill, BsBellSlashFill } from "react-icons/bs";
 import { toaster } from "../ui/toaster.jsx";
 import TimeInput from "../TimeInput.jsx";
+import { colors } from "../../theme/colors.js";
+
+// Note: This component expects to be wrapped in a HomeCard or similar container
+// that provides the background styling. It no longer has its own Box wrapper.
 
 function NotificationSettings() {
   const { permission, settings, requestPermission, updateSettings } = useNotification();
-  const bgColor = useColorModeValue("#ffffff", "#2d2d2d");
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
-  const borderColor = useColorModeValue("#e0e0e0", "#404040");
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
 
   const DEFAULT_QUIET_START = "22:00"; // 10 PM
   const DEFAULT_QUIET_END = "07:00";   // 7 AM
@@ -170,15 +172,9 @@ function NotificationSettings() {
   };
 
   return (
-    <Box
-      bg={bgColor}
-      borderColor={borderColor}
-      borderWidth="1px"
-      borderRadius="lg"
-      p={6}
-    >
+    <>
       {/* Header */}
-      <HStack gap={3} mb={6}>
+      <HStack gap={3} mb={4}>
         {enabled ? (
           <BsBellFill size={20} />
         ) : (
@@ -203,6 +199,7 @@ function NotificationSettings() {
           </VStack>
           <Button
             size="sm"
+            minH="44px"
             colorPalette={enabled ? "green" : "gray"}
             variant={enabled ? "solid" : "outline"}
             onClick={handleToggleNotifications}
@@ -227,7 +224,7 @@ function NotificationSettings() {
               {getPermissionText()}
             </Text>
             {permission !== "granted" && (
-              <Button size="sm" onClick={handleRequestPermission}>
+              <Button size="sm" minH="44px" onClick={handleRequestPermission}>
                 Request Permission
               </Button>
             )}
@@ -265,9 +262,10 @@ function NotificationSettings() {
                 />
               </VStack>
             </HStack>
-            <HStack mt={3} gap={2}>
+            <HStack mt={3} gap={2} flexWrap="wrap">
               <Button
                 size="sm"
+                minH="44px"
                 onClick={handleSaveQuietHours}
                 loading={isSaving}
                 loadingText="Saving..."
@@ -276,6 +274,7 @@ function NotificationSettings() {
               </Button>
               <Button
                 size="sm"
+                minH="44px"
                 variant="outline"
                 onClick={handleResetQuietHours}
                 disabled={isSaving}
@@ -285,6 +284,7 @@ function NotificationSettings() {
               {(quietStart || quietEnd) && (
                 <Button
                   size="sm"
+                  minH="44px"
                   variant="ghost"
                   colorPalette="red"
                   onClick={handleClearQuietHours}
@@ -297,7 +297,7 @@ function NotificationSettings() {
           </Box>
         )}
       </VStack>
-    </Box>
+    </>
   );
 }
 

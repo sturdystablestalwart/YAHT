@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Container, Box, Text, Flex } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode.jsx";
+import { colors } from "../theme/colors.js";
 import HomeCard from "../components/HomeCard.jsx";
 import HabitsList from "../components/HabitsList.jsx";
 import Chart from "../components/Chart.jsx";
@@ -9,7 +10,7 @@ import ManageModal from "../components/ManageModal.jsx";
 
 const Home = () => {
   const [refreshKey, setRefreshKey] = useState(0);
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
 
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
@@ -30,9 +31,9 @@ const Home = () => {
       </Text>
       <Flex h="50vh">
         <HomeCard
-          gradientFrom="#007241"
-          gradientTo="#A65F00"
-          gradientVia="#94002D"
+          gradientFrom={colors.gradient.from}
+          gradientTo={colors.gradient.to}
+          gradientVia={colors.gradient.via}
         >
           <Flex flexDir="column" h="100%">
             <Box flex={1} p={4} minH={0}>
@@ -56,16 +57,16 @@ const Home = () => {
         flexDir={"row"}
       >
         <HomeCard
-          gradientFrom="#007241"
-          gradientTo="#A65F00"
-          gradientVia="#94002D"
+          gradientFrom={colors.gradient.from}
+          gradientTo={colors.gradient.to}
+          gradientVia={colors.gradient.via}
         >
           <LogModal onCompletionLogged={handleRefresh} />
         </HomeCard>
         <HomeCard
-          gradientFrom="#007241"
-          gradientTo="#A65F00"
-          gradientVia="#94002D"
+          gradientFrom={colors.gradient.from}
+          gradientTo={colors.gradient.to}
+          gradientVia={colors.gradient.via}
         >
           <ManageModal onHabitUpdated={handleRefresh} />
         </HomeCard>

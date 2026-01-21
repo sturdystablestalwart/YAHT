@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { FaRegCircle, FaCheckCircle } from "react-icons/fa";
 import { useColorModeValue } from "./ui/color-mode.jsx";
+import { colors } from "../theme/colors.js";
 import { habitsAPI, completionsAPI } from "../services/api";
 
 function HabitsList({ onCompletionLogged, limit, compact = false }) {
@@ -18,9 +19,9 @@ function HabitsList({ onCompletionLogged, limit, compact = false }) {
   const [error, setError] = useState(null);
   const [processingId, setProcessingId] = useState(null);
 
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
-  const successColor = useColorModeValue("#38a169", "#68d391");
-  const hoverBorderColor = useColorModeValue("#666666", "#888888");
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
+  const successColor = useColorModeValue(colors.success.light, colors.success.dark);
+  const hoverBorderColor = useColorModeValue(colors.border.light, colors.border.dark);
 
   const fetchData = async () => {
     try {

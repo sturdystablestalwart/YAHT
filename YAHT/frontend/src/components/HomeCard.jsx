@@ -1,6 +1,7 @@
-import { Box, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { useColorModeValue } from "./ui/color-mode.jsx";
 import { keyframes } from "@emotion/react";
+import { colors } from "../theme/colors.js";
 
 // Define the gradient animation keyframes
 const gradientAnimation = keyframes`
@@ -10,6 +11,8 @@ const gradientAnimation = keyframes`
 `;
 
 const HomeCard = ({ gradientFrom, gradientTo, gradientVia, children }) => {
+  const bgColor = useColorModeValue(colors.bg.light, colors.bg.dark);
+
   return (
     <Box
       flex={1}
@@ -28,7 +31,7 @@ const HomeCard = ({ gradientFrom, gradientTo, gradientVia, children }) => {
     >
       <Box
         flex={1}
-        bg={useColorModeValue("#bbbbbbff", "#222222ff")}
+        bg={bgColor}
         borderRadius="xl"
         h="100%"
         overflow="auto"

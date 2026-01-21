@@ -1,22 +1,21 @@
 import { useState } from "react";
 import {
   Dialog,
-  Box,
-  Text,
   Flex,
   Portal,
   CloseButton,
 } from "@chakra-ui/react";
 import { CiCirclePlus } from "react-icons/ci";
 import { useColorModeValue } from "./ui/color-mode.jsx";
+import { colors } from "../theme/colors.js";
 import HabitsList from "./HabitsList.jsx";
 
 function LogModal({ onCompletionLogged }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const bgColor = useColorModeValue("#e0e0e0", "#1a1a1a");
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
-  const hoverBorderColor = useColorModeValue("#666666", "#888888");
+  const bgColor = useColorModeValue(colors.cardBg.light, colors.cardBg.dark);
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
+  const hoverBorderColor = useColorModeValue(colors.border.light, colors.border.dark);
 
   const handleCompletionLogged = () => {
     if (onCompletionLogged) {

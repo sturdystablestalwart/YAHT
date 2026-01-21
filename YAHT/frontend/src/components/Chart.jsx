@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Box, Flex, Spinner, Text } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode.jsx";
+import { colors } from "../theme/colors.js";
 import { completionsAPI } from "../services/api";
 import anychart from "anychart";
 
@@ -11,8 +12,8 @@ const Chart = ({ days = 5 }) => {
   const chartRef = useRef(null);
   const containerRef = useRef(null);
 
-  const bgColor = useColorModeValue("#bbbbbbff", "#222222ff");
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
+  const bgColor = useColorModeValue(colors.bg.light, colors.bg.dark);
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -61,16 +62,13 @@ const Chart = ({ days = 5 }) => {
       })
     );
 
-    // Color palette for series
-    const colors = ["#38a169", "#3182ce", "#d69e2e", "#e53e3e", "#805ad5", "#00b5d8"];
-
     // Create series for each habit
     data.series.forEach((s, idx) => {
       const mapping = dataSet.mapAs({ x: 0, value: idx + 1 });
       const series = chart.column(mapping);
       series.name(s.name);
-      series.fill(colors[idx % colors.length]);
-      series.stroke(colors[idx % colors.length]);
+      series.fill(colors.chart[idx % colors.chart.length]);
+      series.stroke(colors.chart[idx % colors.chart.length]);
     });
 
     // Configure X axis

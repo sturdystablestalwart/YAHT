@@ -10,12 +10,13 @@ import {
 import { useColorModeValue } from "../ui/color-mode.jsx";
 import { useNotification } from "../../contexts/NotificationContext.jsx";
 import { BsBellFill } from "react-icons/bs";
+import { colors } from "../../theme/colors.js";
 
 function NotificationPrompt() {
   const [isOpen, setIsOpen] = useState(false);
   const { permission, requestPermission, updateSettings } = useNotification();
-  const bgColor = useColorModeValue("#f5f5f5", "#1a1a1a");
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
+  const bgColor = useColorModeValue(colors.cardBg.light, colors.cardBg.dark);
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
   const [isRequesting, setIsRequesting] = useState(false);
 
   useEffect(() => {

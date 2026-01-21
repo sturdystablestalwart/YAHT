@@ -6,10 +6,11 @@ import {
   Portal,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "./ui/color-mode.jsx";
+import { colors } from "../theme/colors.js";
 
 function DeleteConfirmDialog({ isOpen, onClose, onConfirm, habitName, isDeleting }) {
-  const bgColor = useColorModeValue("#f5f5f5", "#1a1a1a");
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
+  const bgColor = useColorModeValue(colors.cardBg.light, colors.cardBg.dark);
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={(e) => !e.open && onClose()}>

@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { Field } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode.jsx";
+import { colors } from "../theme/colors.js";
 import { useAuth } from "../contexts/AuthContext";
 import HomeCard from "../components/HomeCard.jsx";
 
@@ -27,9 +28,9 @@ const Login = () => {
   const from = location.state?.from?.pathname || "/";
 
   // Call hooks at component top level
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
-  const borderColor = useColorModeValue("#a1a1aa", "#52525b");
-  const hoverBg = useColorModeValue("#a1a1aa33", "#52525b33");
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
+  const borderColor = useColorModeValue(colors.border.light, colors.border.dark);
+  const hoverBg = useColorModeValue(colors.hover.light + "33", colors.hover.dark + "33");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,9 +61,9 @@ const Login = () => {
       </Text>
 
       <HomeCard
-        gradientFrom="#007241"
-        gradientTo="#A65F00"
-        gradientVia="#94002D"
+        gradientFrom={colors.gradient.from}
+        gradientTo={colors.gradient.to}
+        gradientVia={colors.gradient.via}
       >
         <Box p={10}>
           <form onSubmit={handleSubmit}>
@@ -102,6 +103,7 @@ const Login = () => {
               <Button
                 type="submit"
                 mt={4}
+                minH="44px"
                 borderWidth={1}
                 variant="outline"
                 color={textColor}
@@ -115,7 +117,7 @@ const Login = () => {
 
               <Text textAlign="center" color={textColor}>
                 Don't have an account?{" "}
-                <Link as={RouterLink} to="/register" color="blue.400">
+                <Link as={RouterLink} to="/register" color={colors.gradient.from}>
                   Register
                 </Link>
               </Text>

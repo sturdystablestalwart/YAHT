@@ -185,3 +185,43 @@ export const notificationsAPI = {
     return handleResponse(response);
   },
 };
+
+export const dashboardAPI = {
+  getSummary: async (range = "30d") => {
+    const response = await fetch(`${API_BASE_URL}/dashboard/summary?range=${range}`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+  },
+
+  getCalendar: async (weeks = 12, habitId = null) => {
+    let url = `${API_BASE_URL}/dashboard/calendar?weeks=${weeks}`;
+    if (habitId) url += `&habitId=${habitId}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+  },
+
+  getTrends: async (range = "90d", habitId = null) => {
+    let url = `${API_BASE_URL}/dashboard/trends?range=${range}`;
+    if (habitId) url += `&habitId=${habitId}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+  },
+
+  getTimeHeatmap: async (range = "30d", habitId = null) => {
+    let url = `${API_BASE_URL}/dashboard/time-heatmap?range=${range}`;
+    if (habitId) url += `&habitId=${habitId}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+  },
+};

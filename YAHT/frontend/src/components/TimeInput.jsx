@@ -1,10 +1,11 @@
 import { useRef } from "react";
 import { HStack, Input, Text } from "@chakra-ui/react";
 import { useColorModeValue } from "./ui/color-mode.jsx";
+import { colors } from "../theme/colors.js";
 
 function TimeInput({ value, onChange, size = "sm" }) {
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
-  const borderColor = useColorModeValue("#a1a1aa", "#52525b");
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
+  const borderColor = useColorModeValue(colors.border.light, colors.border.dark);
 
   // Parse value into 4 digits
   const digits = (value || "").replace(":", "").padEnd(4, "").split("");

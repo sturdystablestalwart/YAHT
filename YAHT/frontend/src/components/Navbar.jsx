@@ -67,9 +67,13 @@ const Navbar = () => {
               <IconButton
                 variant="ghost"
                 rounded="full"
+                size="lg"
+                minH="44px"
+                minW="44px"
                 _hover={{
                   bg: hoverBg,
                 }}
+                aria-label="Create new habit"
               >
                 <Link to={"/create"}>
                   <FaPlus style={{ width: "24px", height: "24px" }} />
@@ -79,9 +83,13 @@ const Navbar = () => {
               <IconButton
                 variant="ghost"
                 rounded="full"
+                size="lg"
+                minH="44px"
+                minW="44px"
                 _hover={{
                   bg: hoverBg,
                 }}
+                aria-label="Dashboard"
               >
                 <Link to={"/dashboard"}>
                   <LuLayoutDashboard style={{ width: "24px", height: "24px" }} />
@@ -92,8 +100,11 @@ const Navbar = () => {
                 <Menu.Trigger asChild>
                   <Button
                     variant="ghost"
+                    minH="44px"
+                    px={3}
                     _hover={{ bg: hoverBg }}
                     color={textColor}
+                    aria-label="User menu"
                   >
                     <HStack>
                       <FaUser />
@@ -125,6 +136,7 @@ const Navbar = () => {
                 as={Link}
                 to="/login"
                 variant="ghost"
+                minH="44px"
                 color={textColor}
               >
                 Login
@@ -133,6 +145,7 @@ const Navbar = () => {
                 as={Link}
                 to="/register"
                 variant="outline"
+                minH="44px"
                 borderColor={textColor}
                 color={textColor}
               >

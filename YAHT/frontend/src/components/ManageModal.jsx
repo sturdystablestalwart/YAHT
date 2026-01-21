@@ -17,6 +17,7 @@ import {
 import { CiSettings } from "react-icons/ci";
 import { FaChevronRight, FaArrowLeft, FaTrash } from "react-icons/fa";
 import { useColorModeValue } from "./ui/color-mode.jsx";
+import { colors } from "../theme/colors.js";
 import { habitsAPI } from "../services/api";
 import DeleteConfirmDialog from "./DeleteConfirmDialog.jsx";
 
@@ -44,10 +45,10 @@ function ManageModal({ onHabitUpdated }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const bgColor = useColorModeValue("#e0e0e0", "#1a1a1a");
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
-  const borderColor = useColorModeValue("#a1a1aa", "#27272a");
-  const hoverBorderColor = useColorModeValue("#666666", "#888888");
+  const bgColor = useColorModeValue(colors.cardBg.light, colors.cardBg.dark);
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
+  const borderColor = useColorModeValue(colors.border.light, colors.border.dark);
+  const hoverBorderColor = useColorModeValue(colors.hover.light, colors.hover.dark);
 
   const fetchHabits = async () => {
     setLoading(true);

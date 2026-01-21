@@ -17,6 +17,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode.jsx";
+import { colors } from "../theme/colors.js";
 import HomeCard from "../components/HomeCard.jsx";
 import { habitsAPI } from "../services/api.js";
 import { useNotification } from "../contexts/NotificationContext.jsx";
@@ -41,8 +42,8 @@ const Create = () => {
     filter: contains,
   });
 
-  const textColor = useColorModeValue("#333333ff", "#cececeff");
-  const borderColor = useColorModeValue("#a1a1aa", "#27272a");
+  const textColor = useColorModeValue(colors.text.light, colors.text.dark);
+  const borderColor = useColorModeValue(colors.border.light, colors.border.dark);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -119,10 +120,10 @@ const Create = () => {
         }}
       >
         <HomeCard
-          color="#222222ff"
-          gradientFrom="#007241"
-          gradientTo="#A65F00"
-          gradientVia="#94002D"
+          color={colors.bg.dark}
+          gradientFrom={colors.gradient.from}
+          gradientTo={colors.gradient.to}
+          gradientVia={colors.gradient.via}
         >
           <Box p={10} borderRadius="md">
             <form onSubmit={handleSubmit}>
@@ -231,16 +232,18 @@ const Create = () => {
 
                 {canShowNotifications() && (
                   <Box pt={4} pb={2}>
-                    <Field.Label color={textColor} mb={3}>
+                    <Text color={textColor} mb={3} fontWeight="medium">
                       Reminder Settings
-                    </Field.Label>
+                    </Text>
                     <VStack align="stretch" gap={3}>
                       <HStack justify="space-between">
                         <Text color={textColor} fontSize="sm">
                           Send me reminders
                         </Text>
                         <Button
-                          size="xs"
+                          size="sm"
+                          minH="44px"
+                          minW="44px"
                           colorPalette={reminderEnabled ? "green" : "gray"}
                           variant={reminderEnabled ? "solid" : "outline"}
                           onClick={() => setReminderEnabled(!reminderEnabled)}
@@ -266,6 +269,7 @@ const Create = () => {
 
                 <Button
                   mt={5}
+                  minH="44px"
                   borderWidth={1}
                   variant="outline"
                   color={textColor}

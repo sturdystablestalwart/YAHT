@@ -5,6 +5,7 @@ import { ThemeProvider, useTheme } from "next-themes";
 
 import * as React from "react";
 import { LuMoon, LuSun } from "react-icons/lu";
+import { colors } from "../../theme/colors.js";
 
 export function ColorModeProvider(props) {
   return (
@@ -41,10 +42,14 @@ export const ColorModeButton = React.forwardRef(function ColorModeButton(
 ) {
   const { toggleColorMode } = useColorMode();
   return (
-    <ClientOnly fallback={<Skeleton boxSize="8" />}>
+    <ClientOnly fallback={<Skeleton boxSize="11" />}>
       <IconButton
         onClick={toggleColorMode}
         variant="ghost"
+        size="lg"
+        minH="44px"
+        minW="44px"
+        rounded="full"
         aria-label="Toggle color mode"
         ref={ref}
         {...props}
@@ -55,7 +60,7 @@ export const ColorModeButton = React.forwardRef(function ColorModeButton(
           },
         }}
         _hover={{
-          bg: "#777777ff",
+          bg: colors.hover.light, // Same for both modes
         }}
       >
         <ColorModeIcon />
