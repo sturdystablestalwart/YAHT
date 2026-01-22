@@ -13,9 +13,7 @@ const getAHabit = async (req, res) => {
     res.status(200).json(habit);
   } catch (err) {
     console.error("Error fetching a habit:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching the habit." });
+    res.status(500).json({ message: "An error occurred while fetching the habit." });
   }
 };
 
@@ -27,9 +25,7 @@ const getAllHabits = async (req, res) => {
     res.status(200).json(habits);
   } catch (err) {
     console.error("Error fetching habits:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching habits." });
+    res.status(500).json({ message: "An error occurred while fetching habits." });
   }
 };
 
@@ -45,8 +41,7 @@ const postHabit = async (req, res) => {
 
   if (missingData.length > 0) {
     return res.status(400).json({
-      message:
-        "Invalid habit data. Please add data to the: " + missingData.join(", "),
+      message: "Invalid habit data. Please add data to the: " + missingData.join(", "),
     });
   }
 
@@ -88,9 +83,7 @@ const deleteHabit = async (req, res) => {
     res.status(200).json({ message: "Habit deleted successfully" });
   } catch (err) {
     console.error("Error deleting habit:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while deleting the habit." });
+    res.status(500).json({ message: "An error occurred while deleting the habit." });
   }
 };
 
@@ -123,9 +116,7 @@ const putHabit = async (req, res) => {
       return res.status(400).json({ message: err.message });
     }
     console.error("Error updating habit:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while updating the habit." });
+    res.status(500).json({ message: "An error occurred while updating the habit." });
   }
 };
 

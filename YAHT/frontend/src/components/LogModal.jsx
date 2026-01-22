@@ -1,27 +1,16 @@
 import { useState } from "react";
-import {
-  Dialog,
-  Flex,
-  Portal,
-  CloseButton,
-} from "@chakra-ui/react";
+import { Dialog, Flex, Portal, CloseButton } from "@chakra-ui/react";
 import { CiCirclePlus } from "react-icons/ci";
 import { useColorModeValue } from "./ui/color-mode.jsx";
 import { colors } from "../theme/colors.js";
 import HabitsList from "./HabitsList.jsx";
 
-function LogModal({ onCompletionLogged }) {
+function LogModal() {
   const [isOpen, setIsOpen] = useState(false);
 
   const bgColor = useColorModeValue(colors.cardBg.light, colors.cardBg.dark);
   const textColor = useColorModeValue(colors.text.light, colors.text.dark);
   const hoverBorderColor = useColorModeValue(colors.border.light, colors.border.dark);
-
-  const handleCompletionLogged = () => {
-    if (onCompletionLogged) {
-      onCompletionLogged();
-    }
-  };
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={(e) => setIsOpen(e.open)}>
@@ -68,7 +57,7 @@ function LogModal({ onCompletionLogged }) {
               </Flex>
             </Dialog.Header>
             <Dialog.Body p={0} overflowY="auto" maxH="60vh">
-              <HabitsList onCompletionLogged={handleCompletionLogged} />
+              <HabitsList />
             </Dialog.Body>
           </Dialog.Content>
         </Dialog.Positioner>

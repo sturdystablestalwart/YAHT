@@ -8,9 +8,7 @@ import { LuMoon, LuSun } from "react-icons/lu";
 import { colors } from "../../theme/colors.js";
 
 export function ColorModeProvider(props) {
-  return (
-    <ThemeProvider attribute="class" disableTransitionOnChange {...props} />
-  );
+  return <ThemeProvider attribute="class" disableTransitionOnChange {...props} />;
 }
 
 export function useColorMode() {
@@ -36,10 +34,7 @@ export function ColorModeIcon() {
   return colorMode === "dark" ? <LuMoon /> : <LuSun />;
 }
 
-export const ColorModeButton = React.forwardRef(function ColorModeButton(
-  props,
-  ref
-) {
+export const ColorModeButton = React.forwardRef(function ColorModeButton(props, ref) {
   const { toggleColorMode } = useColorMode();
   return (
     <ClientOnly fallback={<Skeleton boxSize="11" />}>

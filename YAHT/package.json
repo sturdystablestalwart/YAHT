@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon backend/server.js"
+    "dev": "nodemon backend/server.js",
+    "format": "prettier --write \"backend/**/*.js\" \"frontend/src/**/*.{js,jsx}\"",
+    "format:check": "prettier --check \"backend/**/*.js\" \"frontend/src/**/*.{js,jsx}\""
   },
   "type": "module",
   "keywords": [],
@@ -20,6 +22,7 @@
     "mongoose": "^8.15.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "prettier": "^3.8.1"
   }
 }

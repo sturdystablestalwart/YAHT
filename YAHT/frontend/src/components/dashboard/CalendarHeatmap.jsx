@@ -1,14 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Box, Flex, Text, Spinner } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode.jsx";
-import { dashboardAPI } from "../../services/api";
+import { useCalendarHeatmap } from "../../hooks/queries/useDashboard";
 import { colors } from "../../theme/colors.js";
 import anychart from "anychart";
 
 const CalendarHeatmap = ({ range, habitId }) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const chartRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -18,21 +15,8 @@ const CalendarHeatmap = ({ range, habitId }) => {
   // Calculate weeks from range
   const weeks = range === "7d" ? 2 : range === "30d" ? 5 : 13;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const result = await dashboardAPI.getCalendar(weeks, habitId);
-        setData(result.data);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [weeks, habitId]);
+  const { data: result, isLoading: loading, error } = useCalendarHeatmap(weeks, habitId);
+  const data = result?.data;
 
   useEffect(() => {
     if (!data || !containerRef.current) return;
@@ -117,7 +101,9 @@ const CalendarHeatmap = ({ range, habitId }) => {
           Activity
         </Text>
         <Flex justify="center" align="center" flex={1}>
-          <Text color="red.500" fontSize="sm">Error loading calendar</Text>
+          <Text color="red.500" fontSize="sm">
+            Error loading calendar
+          </Text>
         </Flex>
       </Flex>
     );

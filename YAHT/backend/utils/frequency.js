@@ -27,9 +27,7 @@ function parseFrequency(frequencyInput) {
     }
     const normalizedPeriod = normalizePeriod(period);
     if (!normalizedPeriod) {
-      throw new Error(
-        `Invalid period. Must be one of: ${VALID_PERIODS.join(", ")}`
-      );
+      throw new Error(`Invalid period. Must be one of: ${VALID_PERIODS.join(", ")}`);
     }
     return { target: Math.floor(target), period: normalizedPeriod };
   }

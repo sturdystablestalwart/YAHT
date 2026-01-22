@@ -80,9 +80,12 @@ export const useNotificationScheduler = () => {
 
   // Clean up shown notifications set every day
   useEffect(() => {
-    const cleanupInterval = setInterval(() => {
-      shownNotificationsRef.current.clear();
-    }, 24 * 60 * 60 * 1000); // Every 24 hours
+    const cleanupInterval = setInterval(
+      () => {
+        shownNotificationsRef.current.clear();
+      },
+      24 * 60 * 60 * 1000
+    ); // Every 24 hours
 
     return () => clearInterval(cleanupInterval);
   }, []);

@@ -1,36 +1,18 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Box, Flex, Text, Spinner } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode.jsx";
-import { dashboardAPI } from "../../services/api";
+import { useTimeHeatmap } from "../../hooks/queries/useDashboard";
 import { colors } from "../../theme/colors.js";
 import anychart from "anychart";
 
 const TimeHeatmap = ({ range, habitId }) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const chartRef = useRef(null);
   const containerRef = useRef(null);
 
   const textColor = useColorModeValue(colors.text.light, colors.text.dark);
   const bgColor = useColorModeValue(colors.cardBg.light, colors.cardBg.dark);
-  const borderColor = useColorModeValue(colors.border.light, colors.border.dark);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const result = await dashboardAPI.getTimeHeatmap(range, habitId);
-        setData(result);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [range, habitId]);
+  const { data, isLoading: loading, error } = useTimeHeatmap(range, habitId);
 
   useEffect(() => {
     if (!data || !containerRef.current || data.habits.length === 0) return;
@@ -119,7 +101,9 @@ const TimeHeatmap = ({ range, habitId }) => {
           Time of Day
         </Text>
         <Flex justify="center" align="center" flex={1}>
-          <Text color="red.500" fontSize="sm">Error loading time heatmap</Text>
+          <Text color="red.500" fontSize="sm">
+            Error loading time heatmap
+          </Text>
         </Flex>
       </Flex>
     );

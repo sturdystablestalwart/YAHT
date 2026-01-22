@@ -18,8 +18,8 @@ import {
 } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode.jsx";
 import { colors } from "../theme/colors.js";
-import HomeCard from "../components/HomeCard.jsx";
-import { habitsAPI } from "../services/api.js";
+import GradientCard from "../components/GradientCard.jsx";
+import { useCreateHabit } from "../hooks/queries/useHabits";
 import { useNotification } from "../contexts/NotificationContext.jsx";
 import TimeInput from "../components/TimeInput.jsx";
 
@@ -27,6 +27,7 @@ const Create = () => {
   const navigate = useNavigate();
   const { contains } = useFilter({ sensitivity: "base" });
   const { canShowNotifications } = useNotification();
+  const createHabit = useCreateHabit();
 
   const [title, setTitle] = useState("");
   const [timesPerPeriod, setTimesPerPeriod] = useState("");
@@ -35,7 +36,6 @@ const Create = () => {
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [reminderTime, setReminderTime] = useState("09:00");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const { collection, filter } = useListCollection({
     initialItems: periodOptions,
@@ -45,7 +45,7 @@ const Create = () => {
   const textColor = useColorModeValue(colors.text.light, colors.text.dark);
   const borderColor = useColorModeValue(colors.border.light, colors.border.dark);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
 
@@ -59,37 +59,31 @@ const Create = () => {
       return;
     }
 
-    setIsLoading(true);
+    const frequency = {
+      target: parseInt(timesPerPeriod, 10),
+      period: period,
+    };
 
-    try {
-      const frequency = {
-        target: parseInt(timesPerPeriod, 10),
-        period: period,
+    const habitData = {
+      title: title.trim(),
+      frequency,
+      active: true,
+      description: description.trim() || undefined,
+    };
+
+    // Add reminder settings if user has notifications enabled
+    if (canShowNotifications() && reminderEnabled) {
+      habitData.reminderSettings = {
+        enabled: reminderEnabled,
+        time: reminderTime,
+        days: [0, 1, 2, 3, 4, 5, 6], // All days by default
       };
-
-      const habitData = {
-        title: title.trim(),
-        frequency,
-        active: true,
-        description: description.trim() || undefined,
-      };
-
-      // Add reminder settings if user has notifications enabled
-      if (canShowNotifications() && reminderEnabled) {
-        habitData.reminderSettings = {
-          enabled: reminderEnabled,
-          time: reminderTime,
-          days: [0, 1, 2, 3, 4, 5, 6], // All days by default
-        };
-      }
-
-      await habitsAPI.create(habitData);
-      navigate("/");
-    } catch (err) {
-      setError(err.message || "Failed to create habit");
-    } finally {
-      setIsLoading(false);
     }
+
+    createHabit.mutate(habitData, {
+      onSuccess: () => navigate("/"),
+      onError: (err) => setError(err.message || "Failed to create habit"),
+    });
   };
 
   const handlePeriodSelect = (details) => {
@@ -119,7 +113,7 @@ const Create = () => {
           sm: "row",
         }}
       >
-        <HomeCard
+        <GradientCard
           color={colors.bg.dark}
           gradientFrom={colors.gradient.from}
           gradientTo={colors.gradient.to}
@@ -195,10 +189,7 @@ const Create = () => {
                   >
                     <Combobox.Label color={textColor}>Period</Combobox.Label>
                     <Combobox.Control>
-                      <Combobox.Input
-                        placeholder="Day"
-                        borderColor={borderColor}
-                      />
+                      <Combobox.Input placeholder="Day" borderColor={borderColor} />
                       <Combobox.IndicatorGroup>
                         <Combobox.ClearTrigger />
                         <Combobox.Trigger />
@@ -256,11 +247,7 @@ const Create = () => {
                           <Field.Label color={textColor} fontSize="sm">
                             Reminder Time (24h)
                           </Field.Label>
-                          <TimeInput
-                            value={reminderTime}
-                            onChange={setReminderTime}
-                            size="sm"
-                          />
+                          <TimeInput value={reminderTime} onChange={setReminderTime} size="sm" />
                         </Field.Root>
                       )}
                     </VStack>
@@ -278,7 +265,7 @@ const Create = () => {
                     bg: borderColor,
                   }}
                   type="submit"
-                  loading={isLoading}
+                  loading={createHabit.isPending}
                   loadingText="Creating..."
                 >
                   Create
@@ -286,7 +273,7 @@ const Create = () => {
               </Flex>
             </form>
           </Box>
-        </HomeCard>
+        </GradientCard>
       </Flex>
     </Container>
   );

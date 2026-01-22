@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Dialog,
-  Button,
-  Text,
-  HStack,
-  VStack,
-  Portal,
-} from "@chakra-ui/react";
+import { Dialog, Button, Text, HStack, VStack, Portal } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode.jsx";
 import { useNotification } from "../../contexts/NotificationContext.jsx";
 import { BsBellFill } from "react-icons/bs";
@@ -104,11 +97,7 @@ function NotificationPrompt() {
                   >
                     Don't Ask Again
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={handleMaybeLater}
-                    disabled={isRequesting}
-                  >
+                  <Button variant="outline" onClick={handleMaybeLater} disabled={isRequesting}>
                     Maybe Later
                   </Button>
                   <Button

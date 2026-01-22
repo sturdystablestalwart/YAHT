@@ -1,19 +1,11 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
-import {
-  Container,
-  Box,
-  Text,
-  Input,
-  Button,
-  Flex,
-  Link,
-} from "@chakra-ui/react";
+import { Container, Box, Text, Input, Button, Flex, Link } from "@chakra-ui/react";
 import { Field } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode.jsx";
 import { colors } from "../theme/colors.js";
 import { useAuth } from "../contexts/AuthContext";
-import HomeCard from "../components/HomeCard.jsx";
+import GradientCard from "../components/GradientCard.jsx";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -60,7 +52,7 @@ const Login = () => {
         Login
       </Text>
 
-      <HomeCard
+      <GradientCard
         gradientFrom={colors.gradient.from}
         gradientTo={colors.gradient.to}
         gradientVia={colors.gradient.via}
@@ -124,7 +116,7 @@ const Login = () => {
             </Flex>
           </form>
         </Box>
-      </HomeCard>
+      </GradientCard>
     </Container>
   );
 };

@@ -43,9 +43,7 @@ const logCompletion = async (req, res) => {
     res.status(201).json(completion);
   } catch (err) {
     console.error("Error logging completion:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while logging completion." });
+    res.status(500).json({ message: "An error occurred while logging completion." });
   }
 };
 
@@ -73,17 +71,13 @@ const deleteTodayCompletion = async (req, res) => {
     }).sort({ completedAt: -1 });
 
     if (!deleted) {
-      return res
-        .status(404)
-        .json({ message: "No completion found for current period" });
+      return res.status(404).json({ message: "No completion found for current period" });
     }
 
     res.status(200).json({ message: "Completion removed" });
   } catch (err) {
     console.error("Error deleting completion:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while deleting completion." });
+    res.status(500).json({ message: "An error occurred while deleting completion." });
   }
 };
 
@@ -109,9 +103,7 @@ const getCompletions = async (req, res) => {
     res.status(200).json(completions);
   } catch (err) {
     console.error("Error fetching completions:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching completions." });
+    res.status(500).json({ message: "An error occurred while fetching completions." });
   }
 };
 
@@ -157,9 +149,7 @@ const getCompletionStats = async (req, res) => {
     res.status(200).json(stats);
   } catch (err) {
     console.error("Error fetching completion stats:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching stats." });
+    res.status(500).json({ message: "An error occurred while fetching stats." });
   }
 };
 
@@ -222,9 +212,7 @@ const getDailyStats = async (req, res) => {
     });
   } catch (err) {
     console.error("Error fetching daily stats:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching daily stats." });
+    res.status(500).json({ message: "An error occurred while fetching daily stats." });
   }
 };
 
@@ -295,9 +283,7 @@ const getStreaks = async (req, res) => {
     res.status(200).json(streaks);
   } catch (err) {
     console.error("Error fetching streaks:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching streaks." });
+    res.status(500).json({ message: "An error occurred while fetching streaks." });
   }
 };
 

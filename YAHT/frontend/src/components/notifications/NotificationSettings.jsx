@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  Box,
-  Text,
-  HStack,
-  VStack,
-  Button,
-} from "@chakra-ui/react";
+import { Box, Text, HStack, VStack, Button } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode.jsx";
 import { useNotification } from "../../contexts/NotificationContext.jsx";
 import { BsBellFill, BsBellSlashFill } from "react-icons/bs";
@@ -13,7 +7,7 @@ import { toaster } from "../ui/toaster.jsx";
 import TimeInput from "../TimeInput.jsx";
 import { colors } from "../../theme/colors.js";
 
-// Note: This component expects to be wrapped in a HomeCard or similar container
+// Note: This component expects to be wrapped in a GradientCard or similar container
 // that provides the background styling. It no longer has its own Box wrapper.
 
 function NotificationSettings() {
@@ -21,7 +15,7 @@ function NotificationSettings() {
   const textColor = useColorModeValue(colors.text.light, colors.text.dark);
 
   const DEFAULT_QUIET_START = "22:00"; // 10 PM
-  const DEFAULT_QUIET_END = "07:00";   // 7 AM
+  const DEFAULT_QUIET_END = "07:00"; // 7 AM
 
   const [enabled, setEnabled] = useState(settings.enabled);
   const [quietStart, setQuietStart] = useState(settings.quietHours?.start || "");
@@ -175,11 +169,7 @@ function NotificationSettings() {
     <>
       {/* Header */}
       <HStack gap={3} mb={4}>
-        {enabled ? (
-          <BsBellFill size={20} />
-        ) : (
-          <BsBellSlashFill size={20} />
-        )}
+        {enabled ? <BsBellFill size={20} /> : <BsBellSlashFill size={20} />}
         <Text color={textColor} fontSize="xl" fontWeight="bold">
           Notification Settings
         </Text>
@@ -245,21 +235,13 @@ function NotificationSettings() {
                 <Text color={textColor} fontSize="sm">
                   Start Time (24h)
                 </Text>
-                <TimeInput
-                  value={quietStart}
-                  onChange={setQuietStart}
-                  size="sm"
-                />
+                <TimeInput value={quietStart} onChange={setQuietStart} size="sm" />
               </VStack>
               <VStack align="start" gap={1}>
                 <Text color={textColor} fontSize="sm">
                   End Time (24h)
                 </Text>
-                <TimeInput
-                  value={quietEnd}
-                  onChange={setQuietEnd}
-                  size="sm"
-                />
+                <TimeInput value={quietEnd} onChange={setQuietEnd} size="sm" />
               </VStack>
             </HStack>
             <HStack mt={3} gap={2} flexWrap="wrap">

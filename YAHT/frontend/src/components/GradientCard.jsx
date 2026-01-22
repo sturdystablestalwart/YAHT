@@ -10,7 +10,7 @@ const gradientAnimation = keyframes`
   100% { background-position: 0% 0%; }
 `;
 
-const HomeCard = ({ gradientFrom, gradientTo, gradientVia, children }) => {
+const GradientCard = ({ gradientFrom, gradientTo, gradientVia, children }) => {
   const bgColor = useColorModeValue(colors.bg.light, colors.bg.dark);
 
   return (
@@ -29,17 +29,11 @@ const HomeCard = ({ gradientFrom, gradientTo, gradientVia, children }) => {
       }}
       overflow="hidden"
     >
-      <Box
-        flex={1}
-        bg={bgColor}
-        borderRadius="xl"
-        h="100%"
-        overflow="auto"
-      >
+      <Box flex={1} bg={bgColor} borderRadius="xl" h="100%" overflow="auto">
         {children}
       </Box>
     </Box>
   );
 };
 
-export default HomeCard;
+export default GradientCard;

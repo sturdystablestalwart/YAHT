@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   Box,
   Flex,
@@ -17,9 +17,9 @@ import {
 import { keyframes } from "@emotion/react";
 import { LuChevronDown } from "react-icons/lu";
 import { useColorModeValue } from "../components/ui/color-mode.jsx";
-import { dashboardAPI } from "../services/api";
+import { useDashboardSummary } from "../hooks/queries/useDashboard";
 import { colors } from "../theme/colors.js";
-import HomeCard from "../components/HomeCard.jsx";
+import GradientCard from "../components/GradientCard.jsx";
 import StreakTiles from "../components/dashboard/StreakTiles.jsx";
 import TodayFocus from "../components/dashboard/TodayFocus.jsx";
 import CalendarHeatmap from "../components/dashboard/CalendarHeatmap.jsx";
@@ -36,36 +36,23 @@ const gradientAnimation = keyframes`
 const Dashboard = () => {
   const [selectedHabitId, setSelectedHabitId] = useState(null);
   const [range, setRange] = useState("30d");
-  const [summary, setSummary] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const {
+    data: summary,
+    isLoading: loading,
+    error,
+    refetch: fetchSummary,
+  } = useDashboardSummary(range);
 
   const textColor = useColorModeValue(colors.text.light, colors.text.dark);
   const textMuted = useColorModeValue(colors.textMuted.light, colors.textMuted.dark);
 
-  // Shared gradient props for HomeCard
+  // Shared gradient props for GradientCard
   const gradientProps = {
     gradientFrom: colors.gradient.from,
     gradientTo: colors.gradient.to,
     gradientVia: colors.gradient.via,
   };
-
-  const fetchSummary = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await dashboardAPI.getSummary(range);
-      setSummary(data);
-      setError(null);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [range]);
-
-  useEffect(() => {
-    fetchSummary();
-  }, [fetchSummary]);
 
   const handleSelectHabit = (habitId) => {
     setSelectedHabitId(habitId === selectedHabitId ? null : habitId);
@@ -100,7 +87,7 @@ const Dashboard = () => {
       <Container maxW="container.xl" py={4}>
         <Flex justify="center" align="center" h="50vh" direction="column" gap={4}>
           <Text color="red.500">Error loading dashboard</Text>
-          <Button onClick={fetchSummary} size="sm" minH="44px">
+          <Button onClick={() => fetchSummary()} size="sm" minH="44px">
             Retry
           </Button>
         </Flex>
@@ -174,14 +161,9 @@ const Dashboard = () => {
       </Flex>
 
       {/* Mobile Layout: Scrollable stack */}
-      <VStack
-        display={{ base: "flex", lg: "none" }}
-        align="stretch"
-        gap={3}
-        pb={4}
-      >
+      <VStack display={{ base: "flex", lg: "none" }} align="stretch" gap={3} pb={4}>
         {/* Streaks */}
-        <HomeCard {...gradientProps}>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="140px">
             <StreakTiles
               habits={summary?.habits || []}
@@ -189,41 +171,38 @@ const Dashboard = () => {
               onSelectHabit={handleSelectHabit}
             />
           </Box>
-        </HomeCard>
+        </GradientCard>
 
         {/* Today's Focus */}
-        <HomeCard {...gradientProps}>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="160px" maxH="300px" overflow="auto">
-            <TodayFocus
-              todayFocus={summary?.todayFocus || []}
-              onRefresh={fetchSummary}
-            />
+            <TodayFocus todayFocus={summary?.todayFocus || []} onRefresh={fetchSummary} />
           </Box>
-        </HomeCard>
+        </GradientCard>
 
         {/* Calendar Heatmap */}
-        <HomeCard {...gradientProps}>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="200px">
             <CalendarHeatmap range={range} habitId={selectedHabitId} />
           </Box>
-        </HomeCard>
+        </GradientCard>
 
         {/* Time Heatmap */}
-        <HomeCard {...gradientProps}>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="180px">
             <TimeHeatmap range={range} habitId={selectedHabitId} />
           </Box>
-        </HomeCard>
+        </GradientCard>
 
         {/* Trend Chart */}
-        <HomeCard {...gradientProps}>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="200px">
             <TrendChart range={range} habitId={selectedHabitId} />
           </Box>
-        </HomeCard>
+        </GradientCard>
 
         {/* Completion Bars */}
-        <HomeCard {...gradientProps}>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="160px">
             <CompletionBars
               habits={summary?.habits || []}
@@ -231,7 +210,7 @@ const Dashboard = () => {
               onSelectHabit={handleSelectHabit}
             />
           </Box>
-        </HomeCard>
+        </GradientCard>
       </VStack>
 
       {/* Desktop Layout: 2-column grid */}
@@ -243,7 +222,7 @@ const Dashboard = () => {
         pb={4}
       >
         {/* Row 1: Streaks + Today's Focus */}
-        <HomeCard {...gradientProps}>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="160px">
             <StreakTiles
               habits={summary?.habits || []}
@@ -251,35 +230,32 @@ const Dashboard = () => {
               onSelectHabit={handleSelectHabit}
             />
           </Box>
-        </HomeCard>
-        <HomeCard {...gradientProps}>
+        </GradientCard>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="160px" maxH="250px" overflow="auto">
-            <TodayFocus
-              todayFocus={summary?.todayFocus || []}
-              onRefresh={fetchSummary}
-            />
+            <TodayFocus todayFocus={summary?.todayFocus || []} onRefresh={fetchSummary} />
           </Box>
-        </HomeCard>
+        </GradientCard>
 
         {/* Row 2: Calendar + Time Heatmap */}
-        <HomeCard {...gradientProps}>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="220px">
             <CalendarHeatmap range={range} habitId={selectedHabitId} />
           </Box>
-        </HomeCard>
-        <HomeCard {...gradientProps}>
+        </GradientCard>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="220px">
             <TimeHeatmap range={range} habitId={selectedHabitId} />
           </Box>
-        </HomeCard>
+        </GradientCard>
 
         {/* Row 3: Trends + Completion Bars */}
-        <HomeCard {...gradientProps}>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="200px">
             <TrendChart range={range} habitId={selectedHabitId} />
           </Box>
-        </HomeCard>
-        <HomeCard {...gradientProps}>
+        </GradientCard>
+        <GradientCard {...gradientProps}>
           <Box p={3} minH="200px">
             <CompletionBars
               habits={summary?.habits || []}
@@ -287,7 +263,7 @@ const Dashboard = () => {
               onSelectHabit={handleSelectHabit}
             />
           </Box>
-        </HomeCard>
+        </GradientCard>
       </Box>
     </Container>
   );

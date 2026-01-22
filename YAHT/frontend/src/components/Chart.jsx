@@ -1,33 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Box, Flex, Spinner, Text } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode.jsx";
 import { colors } from "../theme/colors.js";
-import { completionsAPI } from "../services/api";
+import { useDailyStats } from "../hooks/queries/useCompletions";
 import anychart from "anychart";
 
 const Chart = ({ days = 5 }) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, isLoading: loading, error } = useDailyStats(days);
   const chartRef = useRef(null);
   const containerRef = useRef(null);
 
   const bgColor = useColorModeValue(colors.bg.light, colors.bg.dark);
   const textColor = useColorModeValue(colors.text.light, colors.text.dark);
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const stats = await completionsAPI.getDailyStats(days);
-        setData(stats);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, [days]);
 
   useEffect(() => {
     if (!data || !containerRef.current) return;

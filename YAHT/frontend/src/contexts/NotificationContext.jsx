@@ -83,11 +83,7 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const canShowNotifications = () => {
-    return (
-      "Notification" in window &&
-      permission === "granted" &&
-      settings.enabled
-    );
+    return "Notification" in window && permission === "granted" && settings.enabled;
   };
 
   const value = {
@@ -100,11 +96,7 @@ export const NotificationProvider = ({ children }) => {
     canShowNotifications,
   };
 
-  return (
-    <NotificationContext.Provider value={value}>
-      {children}
-    </NotificationContext.Provider>
-  );
+  return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 };
 
 export const useNotification = () => {

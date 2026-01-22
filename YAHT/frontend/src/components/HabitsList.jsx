@@ -1,83 +1,39 @@
-import { useState, useEffect } from "react";
-import {
-  Box,
-  Text,
-  VStack,
-  HStack,
-  Spinner,
-  Flex,
-} from "@chakra-ui/react";
+import { Box, Text, VStack, HStack, Spinner, Flex } from "@chakra-ui/react";
 import { FaRegCircle, FaCheckCircle } from "react-icons/fa";
 import { useColorModeValue } from "./ui/color-mode.jsx";
 import { colors } from "../theme/colors.js";
-import { habitsAPI, completionsAPI } from "../services/api";
+import {
+  useHabits,
+  useStreaks,
+  useLogCompletion,
+  useDeleteTodayCompletion,
+} from "../hooks/queries/useHabits";
 
-function HabitsList({ onCompletionLogged, limit, compact = false }) {
-  const [habits, setHabits] = useState([]);
-  const [streaks, setStreaks] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [processingId, setProcessingId] = useState(null);
+function HabitsList({ limit, compact = false }) {
+  const { data: habits = [], isLoading: habitsLoading, error: habitsError } = useHabits();
+  const { data: streaks = {} } = useStreaks();
+  const logCompletion = useLogCompletion();
+  const deleteCompletion = useDeleteTodayCompletion();
 
   const textColor = useColorModeValue(colors.text.light, colors.text.dark);
   const successColor = useColorModeValue(colors.success.light, colors.success.dark);
   const hoverBorderColor = useColorModeValue(colors.border.light, colors.border.dark);
 
-  const fetchData = async () => {
-    try {
-      const [habitsData, streaksData] = await Promise.all([
-        habitsAPI.getAll(),
-        completionsAPI.getStreaks(),
-      ]);
-      console.log("Habits data:", habitsData);
-      console.log("Streaks data:", streaksData);
-      setHabits(habitsData);
-      setStreaks(streaksData);
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loading = habitsLoading;
+  const error = habitsError;
+  const isProcessing = logCompletion.isPending || deleteCompletion.isPending;
+  const processingId = logCompletion.variables || deleteCompletion.variables;
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleToggle = async (habitId) => {
-    console.log("handleToggle called for habit:", habitId);
-    if (processingId) {
-      console.log("Already processing, returning");
-      return;
-    }
+  const handleToggle = (habitId) => {
+    if (isProcessing) return;
 
     const habitStreak = streaks[habitId];
     const isComplete = habitStreak?.periodComplete;
-    console.log("Current streak data:", habitStreak, "isComplete:", isComplete);
 
-    setProcessingId(habitId);
-    try {
-      if (isComplete) {
-        console.log("Deleting completion...");
-        await completionsAPI.deleteToday(habitId);
-      } else {
-        console.log("Logging completion...");
-        await completionsAPI.log(habitId);
-      }
-
-      console.log("Fetching new streaks...");
-      const newStreaks = await completionsAPI.getStreaks();
-      console.log("New streaks:", newStreaks);
-      setStreaks(newStreaks);
-
-      if (onCompletionLogged) {
-        onCompletionLogged();
-      }
-    } catch (err) {
-      console.error("Error toggling completion:", err);
-    } finally {
-      setProcessingId(null);
+    if (isComplete) {
+      deleteCompletion.mutate(habitId);
+    } else {
+      logCompletion.mutate(habitId);
     }
   };
 
@@ -126,7 +82,7 @@ function HabitsList({ onCompletionLogged, limit, compact = false }) {
   if (error) {
     return (
       <Box p={4}>
-        <Text color="red.500">Error: {error}</Text>
+        <Text color="red.500">Error: {error.message}</Text>
       </Box>
     );
   }
@@ -151,7 +107,7 @@ function HabitsList({ onCompletionLogged, limit, compact = false }) {
         <Flex gap={2} w="100%">
           {displayedHabits.map((habit) => {
             const isComplete = isHabitComplete(habit._id);
-            const isProcessing = processingId === habit._id;
+            const isThisProcessing = processingId === habit._id;
 
             return (
               <Box
@@ -164,30 +120,21 @@ function HabitsList({ onCompletionLogged, limit, compact = false }) {
                 textAlign="center"
                 opacity={isComplete ? 0.8 : 1}
                 transition="border-color 0.3s ease"
-                cursor={isProcessing ? "wait" : "pointer"}
+                cursor={isThisProcessing ? "wait" : "pointer"}
                 onClick={() => handleToggle(habit._id)}
                 _hover={{
                   borderColor: isComplete ? successColor : hoverBorderColor,
                 }}
                 minW={0}
               >
-                {isProcessing ? (
+                {isThisProcessing ? (
                   <Spinner size="sm" color={textColor} />
                 ) : (
                   <>
-                    <Text
-                      fontWeight="bold"
-                      color={textColor}
-                      fontSize="sm"
-                      noOfLines={1}
-                    >
+                    <Text fontWeight="bold" color={textColor} fontSize="sm" noOfLines={1}>
                       {habit.title}
                     </Text>
-                    <Text
-                      fontSize="xs"
-                      color={isComplete ? successColor : textColor}
-                      opacity={0.8}
-                    >
+                    <Text fontSize="xs" color={isComplete ? successColor : textColor} opacity={0.8}>
                       {getProgressText(habit._id)} · {getStreakText(habit._id)}
                     </Text>
                   </>
@@ -211,7 +158,7 @@ function HabitsList({ onCompletionLogged, limit, compact = false }) {
       <VStack align="stretch" gap={2}>
         {displayedHabits.map((habit) => {
           const isComplete = isHabitComplete(habit._id);
-          const isProcessing = processingId === habit._id;
+          const isThisProcessing = processingId === habit._id;
 
           return (
             <HStack
@@ -223,7 +170,7 @@ function HabitsList({ onCompletionLogged, limit, compact = false }) {
               justify="space-between"
               opacity={isComplete ? 0.8 : 1}
               transition="border-color 0.3s ease"
-              cursor={isProcessing ? "wait" : "pointer"}
+              cursor={isThisProcessing ? "wait" : "pointer"}
               onClick={() => handleToggle(habit._id)}
               _hover={{
                 borderColor: isComplete ? successColor : hoverBorderColor,
@@ -244,7 +191,7 @@ function HabitsList({ onCompletionLogged, limit, compact = false }) {
                 </HStack>
               </Box>
               <Box color={isComplete ? successColor : textColor} p={1}>
-                {isProcessing ? (
+                {isThisProcessing ? (
                   <Spinner size="sm" />
                 ) : isComplete ? (
                   <FaCheckCircle size={22} />

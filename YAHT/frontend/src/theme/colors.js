@@ -1,5 +1,5 @@
 // Centralized color constants for YAHT
-// Based on the original color palette from Navbar, App.jsx, and HomeCard
+// Based on the original color palette from Navbar, App.jsx, and GradientCard
 
 export const colors = {
   // Main backgrounds
@@ -58,28 +58,28 @@ export const colors = {
 
   // Gradient accent colors (from navbar logo)
   gradient: {
-    from: "#007241",   // Dark green
-    via: "#94002D",    // Burgundy
-    to: "#A65F00",     // Orange-brown
+    from: "#007241", // Dark green
+    via: "#94002D", // Burgundy
+    to: "#A65F00", // Orange-brown
   },
 
   // GitHub-style heatmap green scale
   heatmap: [
-    "#ebedf0",  // 0 - no activity
-    "#9be9a8",  // 1 - light
-    "#40c463",  // 2 - medium
-    "#30a14e",  // 3 - high
-    "#216e39",  // 4 - very high
+    "#ebedf0", // 0 - no activity
+    "#9be9a8", // 1 - light
+    "#40c463", // 2 - medium
+    "#30a14e", // 3 - high
+    "#216e39", // 4 - very high
   ],
 
   // Chart colors for multi-series
   chart: [
-    "#38a169",  // Green
-    "#3182ce",  // Blue
-    "#d69e2e",  // Amber
-    "#e53e3e",  // Red
-    "#805ad5",  // Purple
-    "#00b5d8",  // Cyan
+    "#38a169", // Green
+    "#3182ce", // Blue
+    "#d69e2e", // Amber
+    "#e53e3e", // Red
+    "#805ad5", // Purple
+    "#00b5d8", // Cyan
   ],
 
   // Grid lines for charts

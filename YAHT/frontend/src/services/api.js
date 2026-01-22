@@ -1,227 +1,78 @@
-const API_BASE_URL = "http://localhost:1996/api";
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("token");
-  return {
-    "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
-};
-
-const handleResponse = async (response) => {
-  const data = await response.json();
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
-    }
-    throw new Error(data.message || "Something went wrong");
-  }
-
-  return data;
-};
+import api from "./axiosInstance";
 
 export const authAPI = {
-  register: async (email, username, password) => {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, username, password }),
-    });
-    return handleResponse(response);
-  },
+  register: (email, username, password) =>
+    api.post("/auth/register", { email, username, password }),
 
-  login: async (email, password) => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    return handleResponse(response);
-  },
+  login: (email, password) => api.post("/auth/login", { email, password }),
 
-  getMe: async () => {
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
+  getMe: () => api.get("/auth/me"),
 
-  updateNotificationSettings: async (settings) => {
-    const response = await fetch(`${API_BASE_URL}/auth/notification-settings`, {
-      method: "PATCH",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(settings),
-    });
-    return handleResponse(response);
-  },
+  updateNotificationSettings: (settings) => api.patch("/auth/notification-settings", settings),
 };
 
 export const habitsAPI = {
-  getAll: async () => {
-    const response = await fetch(`${API_BASE_URL}/habits`, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
+  getAll: () => api.get("/habits"),
 
-  getOne: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/habits/${id}`, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
+  getOne: (id) => api.get(`/habits/${id}`),
 
-  create: async (habitData) => {
-    const response = await fetch(`${API_BASE_URL}/habits`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(habitData),
-    });
-    return handleResponse(response);
-  },
+  create: (habitData) => api.post("/habits", habitData),
 
-  update: async (id, habitData) => {
-    const response = await fetch(`${API_BASE_URL}/habits/${id}`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(habitData),
-    });
-    return handleResponse(response);
-  },
+  update: (id, habitData) => api.put(`/habits/${id}`, habitData),
 
-  delete: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/habits/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
+  delete: (id) => api.delete(`/habits/${id}`),
 };
 
 export const completionsAPI = {
-  log: async (habitId) => {
-    const response = await fetch(`${API_BASE_URL}/completions`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ habitId }),
-    });
-    return handleResponse(response);
-  },
+  log: (habitId) => api.post("/completions", { habitId }),
 
-  getForHabit: async (habitId, startDate, endDate) => {
-    let url = `${API_BASE_URL}/completions/${habitId}`;
+  getForHabit: (habitId, startDate, endDate) => {
     const params = new URLSearchParams();
     if (startDate) params.append("startDate", startDate);
     if (endDate) params.append("endDate", endDate);
-    if (params.toString()) url += `?${params.toString()}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    const query = params.toString();
+    return api.get(`/completions/${habitId}${query ? `?${query}` : ""}`);
   },
 
-  getStats: async (days = 7) => {
-    const response = await fetch(`${API_BASE_URL}/completions/stats?days=${days}`, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
+  getStats: (days = 7) => api.get(`/completions/stats?days=${days}`),
 
-  getDailyStats: async (days = 5) => {
-    const response = await fetch(`${API_BASE_URL}/completions/daily-stats?days=${days}`, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
+  getDailyStats: (days = 5) => api.get(`/completions/daily-stats?days=${days}`),
 
-  getStreaks: async () => {
-    const response = await fetch(`${API_BASE_URL}/completions/streaks`, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
+  getStreaks: () => api.get("/completions/streaks"),
 
-  deleteToday: async (habitId) => {
-    const response = await fetch(`${API_BASE_URL}/completions/${habitId}/today`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
+  deleteToday: (habitId) => api.delete(`/completions/${habitId}/today`),
 };
 
 export const notificationsAPI = {
-  getPending: async (currentTime, timezone) => {
-    let url = `${API_BASE_URL}/notifications/pending`;
+  getPending: (currentTime, timezone) => {
     const params = new URLSearchParams();
     if (currentTime) params.append("currentTime", currentTime);
     if (timezone) params.append("timezone", timezone);
-    if (params.toString()) url += `?${params.toString()}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    const query = params.toString();
+    return api.get(`/notifications/pending${query ? `?${query}` : ""}`);
   },
 
-  markSent: async (habitId) => {
-    const response = await fetch(`${API_BASE_URL}/notifications/mark-sent`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ habitId }),
-    });
-    return handleResponse(response);
-  },
+  markSent: (habitId) => api.post("/notifications/mark-sent", { habitId }),
 };
 
 export const dashboardAPI = {
-  getSummary: async (range = "30d") => {
-    const response = await fetch(`${API_BASE_URL}/dashboard/summary?range=${range}`, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+  getSummary: (range = "30d") => api.get(`/dashboard/summary?range=${range}`),
+
+  getCalendar: (weeks = 12, habitId = null) => {
+    let url = `/dashboard/calendar?weeks=${weeks}`;
+    if (habitId) url += `&habitId=${habitId}`;
+    return api.get(url);
   },
 
-  getCalendar: async (weeks = 12, habitId = null) => {
-    let url = `${API_BASE_URL}/dashboard/calendar?weeks=${weeks}`;
+  getTrends: (range = "90d", habitId = null) => {
+    let url = `/dashboard/trends?range=${range}`;
     if (habitId) url += `&habitId=${habitId}`;
-    const response = await fetch(url, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    return api.get(url);
   },
 
-  getTrends: async (range = "90d", habitId = null) => {
-    let url = `${API_BASE_URL}/dashboard/trends?range=${range}`;
+  getTimeHeatmap: (range = "30d", habitId = null) => {
+    let url = `/dashboard/time-heatmap?range=${range}`;
     if (habitId) url += `&habitId=${habitId}`;
-    const response = await fetch(url, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
-
-  getTimeHeatmap: async (range = "30d", habitId = null) => {
-    let url = `${API_BASE_URL}/dashboard/time-heatmap?range=${range}`;
-    if (habitId) url += `&habitId=${habitId}`;
-    const response = await fetch(url, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    return api.get(url);
   },
 };

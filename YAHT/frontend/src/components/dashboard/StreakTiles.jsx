@@ -100,12 +100,7 @@ const StreakTiles = ({ habits, selectedHabitId, onSelectHabit }) => {
                   </Text>
                 </Box>
               </HStack>
-              <Badge
-                mt={1}
-                colorPalette={badge.color}
-                variant="subtle"
-                size="xs"
-              >
+              <Badge mt={1} colorPalette={badge.color} variant="subtle" size="xs">
                 {badge.label}
               </Badge>
             </Box>

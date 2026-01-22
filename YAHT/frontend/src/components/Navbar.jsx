@@ -1,13 +1,4 @@
-import {
-  Container,
-  Flex,
-  Text,
-  HStack,
-  IconButton,
-  Button,
-  Menu,
-  Portal,
-} from "@chakra-ui/react";
+import { Container, Flex, Text, HStack, IconButton, Button, Menu, Portal } from "@chakra-ui/react";
 import { ColorModeButton, useColorModeValue } from "./ui/color-mode.jsx";
 import { keyframes } from "@emotion/react";
 import { FaPlus, FaUser } from "react-icons/fa6";
@@ -37,12 +28,7 @@ const Navbar = () => {
 
   return (
     <Container maxW={"1920px"} px={4}>
-      <Flex
-        maxH={32}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        flexDir={"row"}
-      >
+      <Flex maxH={32} alignItems={"center"} justifyContent={"space-between"} flexDir={"row"}>
         <Text
           bgGradient="to-l"
           gradientFrom={colors.gradient.from}
@@ -132,13 +118,7 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Button
-                as={Link}
-                to="/login"
-                variant="ghost"
-                minH="44px"
-                color={textColor}
-              >
+              <Button as={Link} to="/login" variant="ghost" minH="44px" color={textColor}>
                 Login
               </Button>
               <Button

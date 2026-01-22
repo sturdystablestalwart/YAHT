@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   Box,
@@ -18,7 +18,7 @@ import { CiSettings } from "react-icons/ci";
 import { FaChevronRight, FaArrowLeft, FaTrash } from "react-icons/fa";
 import { useColorModeValue } from "./ui/color-mode.jsx";
 import { colors } from "../theme/colors.js";
-import { habitsAPI } from "../services/api";
+import { useHabits, useUpdateHabit, useDeleteHabit } from "../hooks/queries/useHabits";
 import DeleteConfirmDialog from "./DeleteConfirmDialog.jsx";
 
 const periodOptions = [
@@ -27,10 +27,8 @@ const periodOptions = [
   { label: "Month", value: "month" },
 ];
 
-function ManageModal({ onHabitUpdated }) {
+function ManageModal() {
   const [isOpen, setIsOpen] = useState(false);
-  const [habits, setHabits] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedHabit, setSelectedHabit] = useState(null);
 
   // Edit form state
@@ -38,36 +36,20 @@ function ManageModal({ onHabitUpdated }) {
   const [editTimesPerPeriod, setEditTimesPerPeriod] = useState("");
   const [editPeriod, setEditPeriod] = useState("");
   const [editDescription, setEditDescription] = useState("");
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   // Delete state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+
+  // TanStack Query hooks
+  const { data: habits = [], isLoading: loading } = useHabits();
+  const updateHabit = useUpdateHabit();
+  const deleteHabit = useDeleteHabit();
 
   const bgColor = useColorModeValue(colors.cardBg.light, colors.cardBg.dark);
   const textColor = useColorModeValue(colors.text.light, colors.text.dark);
   const borderColor = useColorModeValue(colors.border.light, colors.border.dark);
   const hoverBorderColor = useColorModeValue(colors.hover.light, colors.hover.dark);
-
-  const fetchHabits = async () => {
-    setLoading(true);
-    try {
-      const data = await habitsAPI.getAll();
-      setHabits(data);
-    } catch (err) {
-      console.error("Error fetching habits:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchHabits();
-      setSelectedHabit(null);
-    }
-  }, [isOpen]);
 
   const parseFrequency = (frequency) => {
     // Handle new structured format { target, period }
@@ -100,7 +82,7 @@ function ManageModal({ onHabitUpdated }) {
     setError("");
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!editTitle.trim()) {
       setError("Please enter a habit name");
       return;
@@ -111,50 +93,38 @@ function ManageModal({ onHabitUpdated }) {
       return;
     }
 
-    setSaving(true);
     setError("");
 
-    try {
-      const frequency = {
-        target: parseInt(editTimesPerPeriod, 10),
-        period: editPeriod,
-      };
-      await habitsAPI.update(selectedHabit._id, {
-        title: editTitle.trim(),
-        frequency,
-        description: editDescription.trim() || undefined,
-        active: selectedHabit.active,
-      });
+    const frequency = {
+      target: parseInt(editTimesPerPeriod, 10),
+      period: editPeriod,
+    };
 
-      await fetchHabits();
-      setSelectedHabit(null);
-
-      if (onHabitUpdated) {
-        onHabitUpdated();
+    updateHabit.mutate(
+      {
+        id: selectedHabit._id,
+        data: {
+          title: editTitle.trim(),
+          frequency,
+          description: editDescription.trim() || undefined,
+          active: selectedHabit.active,
+        },
+      },
+      {
+        onSuccess: () => setSelectedHabit(null),
+        onError: (err) => setError(err.message || "Failed to update habit"),
       }
-    } catch (err) {
-      setError(err.message || "Failed to update habit");
-    } finally {
-      setSaving(false);
-    }
+    );
   };
 
-  const handleDelete = async () => {
-    setDeleting(true);
-    try {
-      await habitsAPI.delete(selectedHabit._id);
-      setShowDeleteConfirm(false);
-      await fetchHabits();
-      setSelectedHabit(null);
-
-      if (onHabitUpdated) {
-        onHabitUpdated();
-      }
-    } catch (err) {
-      setError(err.message || "Failed to delete habit");
-    } finally {
-      setDeleting(false);
-    }
+  const handleDelete = () => {
+    deleteHabit.mutate(selectedHabit._id, {
+      onSuccess: () => {
+        setShowDeleteConfirm(false);
+        setSelectedHabit(null);
+      },
+      onError: (err) => setError(err.message || "Failed to delete habit"),
+    });
   };
 
   return (
@@ -196,12 +166,7 @@ function ManageModal({ onHabitUpdated }) {
                 <Flex justify="space-between" align="center">
                   {selectedHabit ? (
                     <HStack>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleBack}
-                        p={1}
-                      >
+                      <Button variant="ghost" size="sm" onClick={handleBack} p={1}>
                         <FaArrowLeft />
                       </Button>
                       <Dialog.Title color={textColor} fontSize="xl" fontWeight="bold">
@@ -303,7 +268,7 @@ function ManageModal({ onHabitUpdated }) {
                       <Button
                         colorPalette="green"
                         onClick={handleSave}
-                        loading={saving}
+                        loading={updateHabit.isPending}
                         loadingText="Saving..."
                       >
                         Save Changes
@@ -358,7 +323,7 @@ function ManageModal({ onHabitUpdated }) {
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
         habitName={selectedHabit?.title}
-        isDeleting={deleting}
+        isDeleting={deleteHabit.isPending}
       />
     </>
   );

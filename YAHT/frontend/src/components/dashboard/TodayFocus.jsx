@@ -43,13 +43,7 @@ const TodayFocus = ({ todayFocus, onRefresh }) => {
         <Text fontWeight="semibold" mb={1} fontSize="sm" color={textColor}>
           Today's Focus
         </Text>
-        <Flex
-          justify="center"
-          align="center"
-          flex={1}
-          bg={emptyBg}
-          rounded="md"
-        >
+        <Flex justify="center" align="center" flex={1} bg={emptyBg} rounded="md">
           <Text color={emptyTextColor} fontWeight="medium" fontSize="sm">
             All done for today!
           </Text>

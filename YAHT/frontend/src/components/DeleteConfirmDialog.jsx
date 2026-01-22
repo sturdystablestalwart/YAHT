@@ -1,10 +1,4 @@
-import {
-  Dialog,
-  Button,
-  Text,
-  HStack,
-  Portal,
-} from "@chakra-ui/react";
+import { Dialog, Button, Text, HStack, Portal } from "@chakra-ui/react";
 import { useColorModeValue } from "./ui/color-mode.jsx";
 import { colors } from "../theme/colors.js";
 
@@ -25,16 +19,13 @@ function DeleteConfirmDialog({ isOpen, onClose, onConfirm, habitName, isDeleting
             </Dialog.Header>
             <Dialog.Body p={0} mb={6}>
               <Text color={textColor}>
-                Are you sure you want to delete "<strong>{habitName}</strong>"? This action cannot be undone.
+                Are you sure you want to delete "<strong>{habitName}</strong>"? This action cannot
+                be undone.
               </Text>
             </Dialog.Body>
             <Dialog.Footer p={0}>
               <HStack justify="flex-end" gap={3}>
-                <Button
-                  variant="outline"
-                  onClick={onClose}
-                  disabled={isDeleting}
-                >
+                <Button variant="outline" onClick={onClose} disabled={isDeleting}>
                   Cancel
                 </Button>
                 <Button

@@ -1,14 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Box, Flex, Text, Spinner } from "@chakra-ui/react";
 import { useColorModeValue } from "../ui/color-mode.jsx";
-import { dashboardAPI } from "../../services/api";
+import { useTrends } from "../../hooks/queries/useDashboard";
 import { colors } from "../../theme/colors.js";
 import anychart from "anychart";
 
 const TrendChart = ({ range, habitId }) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const chartRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -16,21 +13,7 @@ const TrendChart = ({ range, habitId }) => {
   const bgColor = useColorModeValue(colors.cardBg.light, colors.cardBg.dark);
   const gridColor = useColorModeValue(colors.grid.light, colors.grid.dark);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const result = await dashboardAPI.getTrends(range, habitId);
-        setData(result);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [range, habitId]);
+  const { data, isLoading: loading, error } = useTrends(range, habitId);
 
   useEffect(() => {
     if (!data || !containerRef.current) return;
@@ -139,7 +122,9 @@ const TrendChart = ({ range, habitId }) => {
           Trends
         </Text>
         <Flex justify="center" align="center" flex={1}>
-          <Text color="red.500" fontSize="sm">Error loading trends</Text>
+          <Text color="red.500" fontSize="sm">
+            Error loading trends
+          </Text>
         </Flex>
       </Flex>
     );

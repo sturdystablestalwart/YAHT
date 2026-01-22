@@ -211,7 +211,8 @@ export const getSummary = async (req, res) => {
         }
       }
 
-      const completionRate = totalPeriods > 0 ? Math.round((completedPeriods / totalPeriods) * 100) : 0;
+      const completionRate =
+        totalPeriods > 0 ? Math.round((completedPeriods / totalPeriods) * 100) : 0;
 
       // Current period status
       const currentPeriodStart = getPeriodStart(now, period);
