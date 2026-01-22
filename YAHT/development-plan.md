@@ -168,14 +168,81 @@ This plan prioritizes high-leverage improvements: changes that deliver maximum v
 ## 3. Backend: Safety & Validation
 **Goal:** Robust error handling and security without over-engineering.
 
+**Status: COMPLETED** (2026-01-23)
+
 *   **Schema Validation (Zod):**
-    *   **Current Issue:** Controllers are cluttered with manual checks (`if (!body.title)...`).
-    *   **Solution:** Create middleware using **Zod** schemas. Validate requests *before* they reach the controller.
+    *   [x] Installed `zod` for schema validation
+    *   [x] Created `backend/middleware/validate.middleware.js` - validation middleware factory
+    *   [x] Created Zod schemas:
+        - `backend/schemas/auth.schema.js` - register, login, notification settings
+        - `backend/schemas/habit.schema.js` - create, update, ID validation
+        - `backend/schemas/completion.schema.js` - log, delete, stats queries
+    *   [x] Applied validation middleware to all routes
+    *   [x] Removed manual `if (!field)` checks from controllers (~120 lines removed)
+
 *   **Security Essentials:**
-    *   **Rate Limiting:** Implement `express-rate-limit` on auth routes to prevent brute-force attacks.
-    *   **Helmet:** Add `helmet` middleware to set secure HTTP headers.
+    *   [x] **Rate Limiting:** Installed `express-rate-limit`, created `backend/config/rateLimiter.js`
+        - 10 requests per 15 minutes on `/api/auth/register` and `/api/auth/login`
+    *   [x] **Helmet:** Added `helmet` middleware to `server.js` for secure HTTP headers
+
 *   **Centralized Error Handling:**
-    *   Replace `console.error` in every `catch` block with a global error handling middleware.
+    *   [x] Created `backend/utils/AppError.js` - custom error class for operational errors
+    *   [x] Created `backend/middleware/error.middleware.js` - global error handler
+        - Handles: ZodError, Mongoose ValidationError, CastError, JWT errors, duplicate key
+        - Consistent JSON response format: `{ message: "..." }`
+    *   [x] Refactored all controllers to use `next(err)` pattern
+    *   [x] Replaced `throw new AppError()` for business logic errors
+
+### Testing Instructions for Phase 3
+
+**To verify the changes:**
+
+1. **Start the backend:**
+   ```bash
+   npm run dev
+   ```
+
+2. **Test Validation Errors (using curl or Postman):**
+   ```bash
+   # Missing email - should return 400
+   curl -X POST http://localhost:1996/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"username": "test", "password": "123456"}'
+
+   # Invalid email format - should return 400
+   curl -X POST http://localhost:1996/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"email": "invalid", "password": "test"}'
+   ```
+
+3. **Test Rate Limiting:**
+   - Send 11 login requests within 15 minutes
+   - 11th request should return 429 "Too many attempts"
+
+4. **Test Security Headers:**
+   ```bash
+   curl -I http://localhost:1996/api/auth/me
+   # Should see: X-Content-Type-Options, X-Frame-Options, etc.
+   ```
+
+5. **Test Error Handling:**
+   - Invalid ObjectId should return 400 (not 500)
+   - Non-existent resources should return 404
+
+### Files Added/Modified
+
+| File | Change |
+|------|--------|
+| `backend/utils/AppError.js` | **NEW** - Custom error class |
+| `backend/middleware/error.middleware.js` | **NEW** - Global error handler |
+| `backend/middleware/validate.middleware.js` | **NEW** - Zod validation middleware |
+| `backend/schemas/auth.schema.js` | **NEW** - Auth validation schemas |
+| `backend/schemas/habit.schema.js` | **NEW** - Habit validation schemas |
+| `backend/schemas/completion.schema.js` | **NEW** - Completion validation schemas |
+| `backend/config/rateLimiter.js` | **NEW** - Rate limiter config |
+| `backend/server.js` | Added helmet, global error handler |
+| `backend/routes/*.js` | Added validation middleware |
+| `backend/controllers/*.js` | Simplified with `next(err)` pattern |
 
 ## 4. Developer Experience (DX)
 **Goal:** Make the project easy to run and maintain.
@@ -189,6 +256,6 @@ This plan prioritizes high-leverage improvements: changes that deliver maximum v
 
 ## Suggested Next Steps
 
-1.  **DX:** Create the root `npm start` script with `concurrently` (one command to start both servers).
-2.  **Phase 3:** Implement backend validation with Zod schemas.
-3.  **Security:** Add rate limiting and Helmet middleware.
+1.  **DX (Phase 4):** Create the root `npm start` script with `concurrently` (one command to start both servers).
+2.  **Production:** Configure environment-based CORS origins and error messages.
+3.  **Testing:** Add integration tests for API endpoints using Playwright MCP or similar.

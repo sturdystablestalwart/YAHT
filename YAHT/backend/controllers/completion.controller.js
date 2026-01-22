@@ -8,6 +8,7 @@ import {
   getPreviousPeriodStart,
   parseFrequency,
 } from "../utils/frequency.js";
+import { AppError } from "../utils/AppError.js";
 
 // Helper to safely get frequency from habit (handles both old string and new object format)
 const getHabitFrequency = (habit) => {
@@ -19,18 +20,15 @@ const getHabitFrequency = (habit) => {
   }
 };
 
-const logCompletion = async (req, res) => {
+const logCompletion = async (req, res, next) => {
   const { habitId } = req.body;
   const userId = req.user.id;
 
-  if (!habitId) {
-    return res.status(400).json({ message: "habitId is required" });
-  }
-
   try {
+    // Validation handled by middleware
     const habit = await Habit.findOne({ _id: habitId, userId });
     if (!habit) {
-      return res.status(404).json({ message: "Habit not found" });
+      throw new AppError("Habit not found", 404);
     }
 
     const completion = new Completion({
@@ -42,12 +40,11 @@ const logCompletion = async (req, res) => {
     await completion.save();
     res.status(201).json(completion);
   } catch (err) {
-    console.error("Error logging completion:", err);
-    res.status(500).json({ message: "An error occurred while logging completion." });
+    next(err);
   }
 };
 
-const deleteTodayCompletion = async (req, res) => {
+const deleteTodayCompletion = async (req, res, next) => {
   const { habitId } = req.params;
   const userId = req.user.id;
 
@@ -55,7 +52,7 @@ const deleteTodayCompletion = async (req, res) => {
     // Get the habit to determine its period
     const habit = await Habit.findOne({ _id: habitId, userId });
     if (!habit) {
-      return res.status(404).json({ message: "Habit not found" });
+      throw new AppError("Habit not found", 404);
     }
 
     const { period } = getHabitFrequency(habit);
@@ -71,17 +68,16 @@ const deleteTodayCompletion = async (req, res) => {
     }).sort({ completedAt: -1 });
 
     if (!deleted) {
-      return res.status(404).json({ message: "No completion found for current period" });
+      throw new AppError("No completion found for current period", 404);
     }
 
     res.status(200).json({ message: "Completion removed" });
   } catch (err) {
-    console.error("Error deleting completion:", err);
-    res.status(500).json({ message: "An error occurred while deleting completion." });
+    next(err);
   }
 };
 
-const getCompletions = async (req, res) => {
+const getCompletions = async (req, res, next) => {
   const { habitId } = req.params;
   const userId = req.user.id;
   const { startDate, endDate } = req.query;
@@ -102,18 +98,17 @@ const getCompletions = async (req, res) => {
     const completions = await Completion.find(query).sort({ completedAt: -1 });
     res.status(200).json(completions);
   } catch (err) {
-    console.error("Error fetching completions:", err);
-    res.status(500).json({ message: "An error occurred while fetching completions." });
+    next(err);
   }
 };
 
-const getCompletionStats = async (req, res) => {
+const getCompletionStats = async (req, res, next) => {
   const userId = req.user.id;
   const { days = 7 } = req.query;
 
   try {
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - parseInt(days));
+    startDate.setDate(startDate.getDate() - days);
     startDate.setHours(0, 0, 0, 0);
 
     const stats = await Completion.aggregate([
@@ -148,15 +143,14 @@ const getCompletionStats = async (req, res) => {
 
     res.status(200).json(stats);
   } catch (err) {
-    console.error("Error fetching completion stats:", err);
-    res.status(500).json({ message: "An error occurred while fetching stats." });
+    next(err);
   }
 };
 
-const getDailyStats = async (req, res) => {
+const getDailyStats = async (req, res, next) => {
   const userId = req.user.id;
   const { days = 5 } = req.query;
-  const numDays = parseInt(days);
+  const numDays = days;
 
   const toDateString = (date) => {
     const d = new Date(date);
@@ -211,12 +205,11 @@ const getDailyStats = async (req, res) => {
       series,
     });
   } catch (err) {
-    console.error("Error fetching daily stats:", err);
-    res.status(500).json({ message: "An error occurred while fetching daily stats." });
+    next(err);
   }
 };
 
-const getStreaks = async (req, res) => {
+const getStreaks = async (req, res, next) => {
   const userId = req.user.id;
 
   try {
@@ -282,8 +275,7 @@ const getStreaks = async (req, res) => {
 
     res.status(200).json(streaks);
   } catch (err) {
-    console.error("Error fetching streaks:", err);
-    res.status(500).json({ message: "An error occurred while fetching streaks." });
+    next(err);
   }
 };
 
