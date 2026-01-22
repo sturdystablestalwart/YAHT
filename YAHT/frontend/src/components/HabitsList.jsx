@@ -22,7 +22,12 @@ function HabitsList({ limit, compact = false }) {
   const loading = habitsLoading;
   const error = habitsError;
   const isProcessing = logCompletion.isPending || deleteCompletion.isPending;
-  const processingId = logCompletion.variables || deleteCompletion.variables;
+  // Only set processingId when a mutation is actually pending (variables persist after completion)
+  const processingId = logCompletion.isPending
+    ? logCompletion.variables
+    : deleteCompletion.isPending
+      ? deleteCompletion.variables
+      : null;
 
   const handleToggle = (habitId) => {
     if (isProcessing) return;
