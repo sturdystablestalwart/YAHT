@@ -24,3 +24,12 @@ dist/
 nul
 *.log
 .DS_Store
+
+# Claude temp files
+tmpclaude-*
+
+# Obsidian
+.obsidian/
+
+# Playwright MCP
+.playwright-mcp/
